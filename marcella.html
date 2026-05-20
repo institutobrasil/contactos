@@ -44,20 +44,22 @@
     color:var(--azul);background:rgba(31,95,166,.08);
     padding:4px 12px;border-radius:20px;
   }
-  .rows{padding:10px 22px}
+  .rows{padding:10px 20px}
   .row{
-    display:flex;align-items:center;gap:14px;
-    padding:13px 6px;border-bottom:1px solid var(--linha);
+    display:flex;align-items:center;gap:12px;
+    padding:13px 4px;border-bottom:1px solid var(--linha);
     color:var(--texto);text-decoration:none;font-size:14px;
   }
   .row:last-child{border-bottom:none}
   .ico{
-    width:36px;height:36px;flex:0 0 36px;border-radius:10px;
+    width:34px;height:34px;flex:0 0 34px;border-radius:10px;
     background:rgba(31,95,166,.08);color:var(--azul);
     display:flex;align-items:center;justify-content:center;font-size:16px;
   }
   .row small{display:block;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--suave);margin-bottom:1px}
-  .row span span,.row span{word-break:break-all}
+  .row > span:not(.ico){min-width:0;flex:1 1 auto}
+  .row .val{display:block;overflow-wrap:anywhere;line-height:1.3}
+  .row .val.email{white-space:nowrap;font-size:clamp(11px,3.6vw,14px);letter-spacing:-0.2px}
   .actions{padding:16px 22px 24px;display:grid;gap:11px}
   .btn{
     display:flex;align-items:center;justify-content:center;gap:9px;
@@ -87,15 +89,15 @@
     <div class="rows">
       <a class="row" id="emailRow" href="#">
         <span class="ico">✉</span>
-        <span><small>E-mail institucional</small><span id="email"></span></span>
+        <span><small>E-mail institucional</small><span class="val email" id="email"></span></span>
       </a>
       <a class="row" id="telRow" href="#">
         <span class="ico">☎</span>
-        <span><small>Telefone</small><span id="tel"></span></span>
+        <span><small>Telefone</small><span class="val" id="tel"></span></span>
       </a>
       <a class="row" href="https://www.institutobrasil.pt" target="_blank" rel="noopener">
         <span class="ico">🌐</span>
-        <span><small>Website</small><span>institutobrasil.pt</span></span>
+        <span><small>Website</small><span class="val">institutobrasil.pt</span></span>
       </a>
     </div>
 
@@ -125,6 +127,21 @@
   document.getElementById("emailRow").href = "mailto:" + dados.email;
   document.getElementById("telRow").href = "tel:" + dados.telefone;
   document.getElementById("waBtn").href = "https://wa.me/" + dados.whatsapp;
+
+  // Ajusta o tamanho do email para caber sempre numa linha, sem cortar nem partir
+  function ajustarEmail(){
+    var el = document.getElementById("email");
+    var caixa = el.parentElement;          // o span que contem <small> e o email
+    var disponivel = caixa.clientWidth;
+    var tamanho = 14;
+    el.style.fontSize = tamanho + "px";
+    while (el.scrollWidth > disponivel && tamanho > 8.5){
+      tamanho -= 0.5;
+      el.style.fontSize = tamanho + "px";
+    }
+  }
+  window.addEventListener("load", function(){ requestAnimationFrame(ajustarEmail); });
+  window.addEventListener("resize", ajustarEmail);
 
   function baixarVCard(){
     const vcf =
